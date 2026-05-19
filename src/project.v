@@ -1,27 +1,34 @@
-/*
- * Copyright (c) 2024 Your Name
- * SPDX-License-Identifier: Apache-2.0
- */
-
 `default_nettype none
 
 module tt_um_example (
-    input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
-    output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
-    input  wire       clk,      // clock
-    input  wire       rst_n     // reset_n - low to reset
+    input  wire [7:0] ui_in,    // Factory ki 8 Input pins
+    output wire [7:0] uo_out,   // Factory ki 8 Output pins
+    input  wire [7:0] uio_in,   // Baaki connections (ignore)
+    output wire [7:0] uio_out,  
+    output wire [7:0] uio_oe,   
+    input  wire       ena,      
+    input  wire       clk,      
+    input  wire       rst_n     
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+    // Factory Rule: Jo pins use nahi ho rahi unhe band (0) kar do
+    assign uio_out = 8'b0;
+    assign uio_oe  = 8'b0;
+    assign uo_out[7:2] = 6'b0; // Output pin 2 se 7 tak band kar di
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    // Humara Half Adder logic
+    wire a = ui_in[0]; // Factory ki pehli pin ko 'a' maan liya
+    wire b = ui_in[1]; // Factory ki dusri pin ko 'b' maan liya
+    
+    wire sum;
+    wire carry;
+
+    // Sum ke liye XOR aur Carry ke liye AND
+    assign sum = a ^ b;
+    assign carry = a & b;
+
+    // Output Sum aur Carry ko factory ki pehli aur dusri pin par bhej diya
+    assign uo_out[0] = sum;
+    assign uo_out[1] = carry;
 
 endmodule
