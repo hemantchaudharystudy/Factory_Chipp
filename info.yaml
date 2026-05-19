@@ -1,7 +1,4 @@
----
-# TinyTapeout project information
 yaml_version: 6
-
 project:
   title:        "My First Half Adder"      
   author:       "Hemant Chaudhary"      
